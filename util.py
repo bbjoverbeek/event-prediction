@@ -8,8 +8,8 @@ from enum import Enum
 class EventType(Enum):
     """The type of an event."""
 
-    NONREALIS = 0
-    REALIS = 1
+    NONREALIS = 1
+    REALIS = 2
 
     @staticmethod
     def from_str(event_type: str) -> 'EventType':
@@ -27,8 +27,8 @@ class EventType(Enum):
 class MentionType(Enum):
     """The type of an mention."""
 
-    PATIENT = 0
-    AGENT = 1
+    PATIENT = 3
+    AGENT = 4
 
     @staticmethod
     def from_str(mention_type: str) -> 'MentionType':
@@ -150,6 +150,9 @@ class Annotation:
         self, start_char_idx: int, end_char_idx: int, text: str
     ) -> tuple[int]:
         """Changes character based index into token based index"""
+        # replace characters that are not selected
+        text = text.replace('-', ' ').replace("'", ' ')
+
         text_list = [token + ' ' for token in text.split(' ')]
 
         start_idx = None
@@ -172,6 +175,7 @@ class Annotation:
 
         raise IndexError(
             'Could not line up the start/end char index with index of a token in text'
+            f'\ntext: {text}, start_idx: {start_char_idx} - end_idx: {end_char_idx} selection: {text[start_char_idx:end_char_idx+1]}'
         )
 
     def get_annotations_set(
@@ -202,5 +206,41 @@ class Annotation:
 
         return annotations
 
-    def export_training_data(self) -> list:
-        """Returns all the information required for training a model"""
+    def get_events_training_data(self) -> dict[list[int | str]]:
+        """Returns all the information required for training a model on events
+        Does not include separate verb particles
+        """
+
+        tokens = self.text.split(' ')
+
+        labels = []
+        for token_idx, _ in enumerate(tokens):
+            labels.append(0)
+            for event_idx, event in self.events.items():
+                if token_idx in event_idx:
+                    labels[token_idx] = event['type'].value
+
+        return {'event_tags': labels, 'tokens': tokens}
+
+
+def main(argv: list[str]) -> None:
+    """Main function for debugging Currently prints all annotations from a file"""
+
+    if len(argv) != 2:
+        print('Attach one file to print the annotations from.', file=sys.stderr)
+        return
+
+    with open(argv[1], 'r', encoding='UTF-8') as inp:
+        annotations_json = json.load(inp)
+
+    annotations = [Annotation(annotation) for annotation in annotations_json]
+
+    for annotation in annotations:
+        print(annotation, end='\n\n')
+
+
+if __name__ == '__main__':
+    import sys
+    import json
+
+    main(sys.argv)
