@@ -1,0 +1,47 @@
+<View>
+  	
+  	<View style="display:none;">
+      <Labels name="entities" toName="text">
+        <Label value="mention" background="silver" hotkey="none"/>
+      </Labels>
+    </View>
+  
+	<Relations>
+    	<Relation value="Agent"/>
+      	<Relation value="Patient"/>
+	</Relations>
+  
+  <View style="display:flex; justify-content:space-around;">
+      <View>
+        <Labels name="event" toName="text" showInline="true">
+            <Label value="Realis Event" background="red"/>
+            <Label value="Non-realis Event" background="blue"/>
+        </Labels>
+      </View>
+  </View>
+  
+  	<View style="padding:1em 2em; line-height: 4em;">
+  	<Text name="text" value="$text" granularity="word"/>
+    </View>
+  
+    <View>
+	<Choices name="sep_verb_particle" toName="text" choice="multiple" visibleWhen="region-selected" whenTagName="event" perRegion="true">
+      <Choice alias="contains_sep_verb_particle" value="Contains separate verb particle"/>
+  	</Choices>
+    </View>
+  
+</View>
+
+<!-- {
+    "data": {
+      "sentid": "3-1",
+      "author": "ConanDoyle",
+      "title": "SherlockHolmesDeAgraSchat",
+      "text_len": 19,
+      "pre_context2": "EERSTE HOOFDSTUK .",
+      "pre_context1": "De kennis der gevolgtrekking .",
+      "text": "Sherlock Holmes nam zijn flesch van den schoorsteenmantel en zijn werktuig voor onderhuidsche inspuitingen uit zijn marokijnen foudraal .",
+      "post_context1": "Met zijne lange , witte , zenuwachtige vingers bracht hij de fijne naald in orde , en schoof de linkermouw van zijn overhemd omhoog .",
+      "post_context2": "Gedurende eenigen tijd bleven zijne oogen nadenkend op den gespierden voorarm en pols gericht , die met ontelbare teekenen van inprikkingen als bezaaid waren ."
+    }
+  } -->
